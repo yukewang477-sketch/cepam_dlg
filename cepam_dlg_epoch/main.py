@@ -4,9 +4,8 @@ import math
 import sys
 import os
 
-# Get the directory of this script
+
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-# Get the parent directory (CEPAM root)
 PROJECT_ROOT = os.path.dirname(SCRIPT_DIR)
 
 # Add dlg directory to path (relative to project root)
@@ -28,7 +27,7 @@ import random
 from torch.distributions.laplace import Laplace
 from vision import LeNet, CNN, weights_init
 import copy
-from dlg2_0 import dlg_cls, add_uveqFed, run_dlg
+from dlg import dlg_cls, add_uveqFed, run_dlg
 import sys
 from datetime import datetime
 import pickle
@@ -48,10 +47,9 @@ class GrayscaleToRGB:
         return img
 
 
-# Add code2 directory to path (relative to project root)
-code2_path = os.path.join(PROJECT_ROOT, 'code2')
-if os.path.exists(code2_path):
-    sys.path.append(code2_path)
+cepam_path = os.path.join(PROJECT_ROOT, 'code2')
+if os.path.exists(cepam_path):
+    sys.path.append(cepam_path)
 
 # CEPAM
 try:
@@ -65,7 +63,7 @@ except ImportError as e:
     CEPAMClass = None
     CEPAM_AVAILABLE = False
 parser = argparse.ArgumentParser(
-    description='Main 2.0 - DLG Attack on CEPAM Protection',
+    description='Main - DLG Attack on CEPAM Protection',
     formatter_class=argparse.ArgumentDefaultsHelpFormatter
 )
 
@@ -121,6 +119,7 @@ parser.add_argument('--epsilons', type=str, default=None,
 
 parser.add_argument('--privacy_noise', type=str, default='laplace',
                     help='[Legacy] Privacy noise type (CEPAM uses --privacy_type instead)')
+########################################################################################################################################################################################################################################
 parser.add_argument('--epochs', type=int, default=None,
                     help='Number of training epochs to test (0 to N-1, inclusive). Default: 31 (epochs 0-30)')
 parser.add_argument('--num_images', type=int, default=3,
@@ -135,7 +134,7 @@ if not torch.cuda.is_available() and args.device.startswith('cuda'):
     args.device = "cpu"
 
 print("\n" + "=" * 70)
-print("Main 2.0 - DLG Attack on CEPAM Protection - Configuration")
+print("Main - DLG Attack on CEPAM Protection - Configuration")
 print("=" * 70)
 print(f"Device: {device}")
 print(f"Dataset: {args.dataset}")
@@ -189,7 +188,6 @@ def produce_image_pentas(image_number_list, iteration_list, noise_param_list, la
     loss_matrix = np.zeros([4, len(iteration_list), len(image_number_list), len(lattice_dim_list), len(noise_param_list)])
     MSE_matrix = np.zeros([4, len(iteration_list), len(image_number_list), len(lattice_dim_list), len(noise_param_list)])
     SSIM_matrix = np.zeros([4, len(iteration_list), len(image_number_list), len(lattice_dim_list), len(noise_param_list)])
-    # grads_norm_mat = np.zeros([len(iteration_list), len(image_number_list)])
     # opening datasets
     dataset = getattr(datasets, args.dataset)
     train_loader = torch.utils.data.DataLoader(
@@ -265,7 +263,6 @@ def produce_image_pentas(image_number_list, iteration_list, noise_param_list, la
                     ## CEPAM ##
                     args.attack = 'cepam'
                     args.privacy_type = privacy_type
-                    # Noise parameters are set from epsilon above
                     dlg.apply_noise(0, 1, args=args)
                     loss_matrix[3, i, j, k, l], MSE_matrix[3, i, j, k, l], SSIM_matrix[3, i, j, k, l] = dlg.dlg()
                     cepam_only_img = dlg.final_image
@@ -898,7 +895,7 @@ def plot_graphs(algo, iteration_list, param_str=''):
 # import cProfile,pstats
 def main():
     """
-    Main 2.0 function for comprehensive DLG attack testing against CEPAM
+    Main function for comprehensive DLG attack testing against CEPAM
     
     This is an alternative implementation to main.py with similar functionality
     but focuses on image reconstruction tests. It provides:
@@ -1057,9 +1054,6 @@ def main():
     print(f"\nTo enable image reconstruction test:")
     print(f"  - Uncomment the 'Test 2' section in main() function")
     print("=" * 70)
-    
-    # plt.show()  # Commented out to avoid blocking terminal
-    # Uncomment above line if you want to see plots interactively
 
 
 if __name__ == "__main__":

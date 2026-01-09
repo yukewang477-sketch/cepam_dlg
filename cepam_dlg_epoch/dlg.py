@@ -18,7 +18,6 @@ import os
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.dirname(SCRIPT_DIR)
 
-# cepam is the newest version of cepam code
 cepam_path = os.path.join(PROJECT_ROOT, 'cepam')
 if os.path.exists(cepam_path):
     sys.path.append(cepam_path)
@@ -63,14 +62,12 @@ def add_uveqFed(original_dy_dx, epsilon, bit_rate, args):
             args.clip_threshold = 1.0
         
         # Set noise parameters based on privacy_type
-        # Priority: b/sigma already set from epsilon in main2.0.py > default
-        # Note: epsilon to b/sigma conversion is done in main2.0.py before calling apply_noise
         if args.privacy_type == 'laplace':
-            # For Laplace: use b parameter (should be set from epsilon in main2.0.py)
+            # For Laplace: use b parameter (should be set from epsilon in main.py)
             if not hasattr(args, 'b') or args.b is None:
                 args.b = 0.005  # Default Laplace scale parameter
         elif args.privacy_type == 'gaussian':
-            # For Gaussian: use sigma parameter (should be set from epsilon in main2.0.py)
+            # For Gaussian: use sigma parameter (should be set from epsilon in main.py)
             if not hasattr(args, 'sigma') or args.sigma is None:
                 args.sigma = 0.1  # Default Gaussian standard deviation
         else:
